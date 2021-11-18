@@ -1,0 +1,196 @@
+{% extends 'display_part/index.html' %}
+{% load static %}
+{% block nav %}{% endblock nav %}
+{% block content %}
+
+<form class="chart_selector" action="{% url 'prediction:show_chart_long' store_str=store_str %}" method="GET"
+    id="submit_form">
+    <div class="date_selector">
+        <select name="pred_start_date" id="submit_select">
+            {% for date in pred_date_list %}
+            <option value="{{date}}">{{date}}</option>
+            {% endfor %}
+        </select>
+        <select name="pred_end_date" id="submit_select2">
+            {% for date_reversed in pred_date_list_reversed %}
+            <option value="{{date_reversed}}">{{date_reversed}}</option>
+            {% endfor %}
+        </select>
+    </div>
+
+    <div class="store_selector">
+        <input type="submit" name="store" value="FES">
+        <input type="submit" name="store" value="Garage">
+        <input type="submit" name="store" value="灯篭">
+        <input type="submit" name="store" value="罠一目">
+        <input type="submit" name="store" value="罠中目黒">
+    </div>
+    {% if this_month %}
+    <input type="hidden" name="this_month" value={{this_month}}>
+    {% endif %}
+</form>
+
+<div class="wrap_chart">
+    <canvas class="chart_lunch" id='fesLunchChart' height="100"></canvas>
+</div>
+
+<div class="df_table_wrapper">
+    <div class="df_table_container">
+        <table border="3" class="df_table">
+
+            <tr>
+                <th class="df_table_index"></th>
+                {% for day in dayList %}
+                <th class="df_table_column">{{day}}</th>
+                {% endfor %}
+            </tr>
+            {% for index,data in df_forTable_l.iterrows %}
+            <tr>
+                <td>
+                    ☀{{index}}
+                </td>
+                {% for d in data %}
+                <td>
+                    {{d}}名
+                </td>
+                {% endfor %}
+            </tr>
+            {% endfor %}
+            <tr>
+                <td>☀売上</td>
+                {% for sales in saleslist_forTable_l %}
+                <td>{{sales}}万</td>
+                {% endfor %}
+            </tr>
+            <tr>
+                <td>☀人数</td>
+                {% for p in required_people_l %}
+                <td>{{p}}人</td>
+                {% endfor %}
+            </tr>
+            <tr>
+                <td></td>
+                {% comment %} 空白 {% endcomment %}
+                {% for p in required_people_l %}
+                <td></td>
+                {% endfor %}
+            </tr>
+            {% for index,data in df_forTable_d.iterrows %}
+            <tr>
+                <td>
+                    🌙{{index}}
+                </td>
+                {% for d in data %}
+                <td>
+                    {{d}}名
+                </td>
+                {% endfor %}
+            </tr>
+            {% endfor %}
+            <tr>
+                <td>🌙売上</td>
+                {% for sales in saleslist_forTable_d %}
+                <td>{{sales}}万</td>
+                {% endfor %}
+            </tr>
+            <tr>
+                <td>🌙人数</td>
+                {% for p in required_people_d %}
+                <td>{{p}}人</td>
+                {% endfor %}
+            </tr>
+            <tr>
+                <td></td>
+                {% comment %} 空白 {% endcomment %}
+                {% for p in required_people_l %}
+                <td></td>
+                {% endfor %}
+            </tr>
+            <tr>
+                <td>日ごと売上</td>
+                {% for p in daily_total_sales_forTable %}
+                <td>{{p}}万</td>
+                {% endfor %}
+            </tr>
+            <tr>
+                <td>累計売上</td>
+                {% for p in amount_sales_forTable %}
+                <td>{{p}}万</td>
+                {% endfor %}
+            </tr>
+
+        </table>
+        <br>
+    </div>
+    <span>(過去2ヶ月参照)☀単価{{unit_price_l}}円 🌙単価{{unit_price_d}}円</span>
+    <span>正確率 ☀{{accuracy_l}} 🌙{{accuracy_d}}</span>
+</div>
+
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.7.1/Chart.min.js"></script>
+<script>
+
+document.getElementById('submit_select').value = '{{ start_date }}';
+document.getElementById('submit_select2').value = '{{ end_date }}';
+
+
+    // ーーーー昼ーーーーー
+    const list = [];
+    {% for i in xticks %}
+    list.push("{{i}}")
+    {% endfor %}
+
+    new Chart(document.getElementById("fesLunchChart"), {
+        type: "line",
+        data: {
+            labels: list,
+            datasets: [{
+                label: "☀予測 {{pred_total_l}}名 {{total_sales_pred_l}}円",
+                data: {{ pred_l }},
+                borderColor: ["rgb(255, 99, 132)"],
+                lineTension: 0,
+                fill: false,
+                // borderWidth:
+            },
+                {
+            label: "🌙予測 {{pred_total_d}}名 {{total_sales_pred_d}}円  ■ランチ＋ディナー合計{{total_pred_price}}円",
+            data: {{ pred_d }},
+        borderColor: ["rgb(25, 99, 132)"],
+        lineTension: 0,
+        fill: false,
+                    // borderWidth:
+                },
+            ],
+        },
+        options: {
+        title: {
+            display: true,
+            text: '{{store_str}}'
+        },
+        scales: {
+            yAxes: [{
+                ticks: {
+                    min: 0,
+                    max: 100,
+                    // stepSize: 10,
+                },
+
+            }],
+
+            xAxes: [{
+                ticks: {
+                    autoSkip: false,
+                    maxRotation: 70,
+                    minRotation: 70,
+                }
+            }]
+        },
+        maintainAspectRatio: false
+
+
+    },
+    });
+
+
+</script>
+{% endblock content %}

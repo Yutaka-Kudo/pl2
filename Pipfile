@@ -1,0 +1,45 @@
+[[source]]
+url = "https://pypi.org/simple"
+verify_ssl = true
+name = "pypi"
+
+[packages]
+django = "*"
+openpyxl = "*"
+mysql-connector-python = "*"
+django-pandas = "*"
+django_heroku = "*"
+matplotlib = "*"
+mysqlclient = "*"
+gunicorn = "*"
+dj-database-url = "*"
+whitenoise = "*"
+psycopg2-binary = "*"
+pandas = "==0.24.2"
+japanize-matplotlib = "*"
+django-import-export = "*"
+xlsxwriter = "*"
+rq = "*"
+requests = "*"
+line-bot-sdk = "*"
+devtools = "*"
+scikit-learn = "*"
+jpholiday = "*"
+xlrd = "==1.2.0"
+selenium = "*"
+lxml = "*"
+html5lib = "*"
+beautifulsoup4 = "*"
+boto3 = "*"
+django-storages = "*"
+livereload = "*"
+python-dotenv = "*"
+msal = "==1.10.0"
+icecream = "*"
+
+[dev-packages]
+flake8 = "*"
+autopep8 = "*"
+
+[requires]
+python_version = "3.7.9"

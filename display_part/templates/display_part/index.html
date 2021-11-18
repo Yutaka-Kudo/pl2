@@ -1,0 +1,408 @@
+{% extends 'display_part/layout.html' %}
+{% load static %}
+
+
+
+<body>
+
+    <center>
+        {% block content %}
+        <div class="spacer" style="height:80px;"></div>
+
+
+        {% if not user.is_authenticated %}            
+            <a href="{% url 'display_part:signin' %}" class="btn btn-primary btn-large">サインイン</a>
+            <p>サインインしてアクセス権を許可してください。</p>
+
+        {% else %}
+            {% if user.manager %}
+                <h5>Welcome {{user.name}}</h5>
+            {% endif %}
+
+            <h4>{{store_name}} <span style="font-size:.8rem">としてログイン中<span></h4>
+            
+            {% if user.super %}
+                <div class="container-fluid2">
+                    <a href="{% url 'display_part:manage' %}" class="btn btn-info btn-large">各種設定</a>
+                </div>            
+            {% endif %}
+
+            {% if user.manager %}
+                <div class="container-fluid">
+                    <h4>収支表</h4>
+                    <div class="select-whole">
+                        <form action="{% url 'display_part:detailbymonth' when='xxx' %}" method="GET">
+                            <span>全体</span>
+                            <select name="year-select" type="text">
+                                <option value="default">年 選択</option>
+                                {% for year in year_list %}
+                                <option value="{{year}}">{{year}}年</option>
+                                {% endfor %}
+                            </select>
+                            <select name="month-select" type="text">
+                                <option value="default">月 選択</option>
+                                {% for month in month_list %}
+                                <option value="{{month}}">{{month}}月</option>
+                                {% endfor %}
+                            </select>
+                            <button type="submit" class="btn btn-dark">送信</button>
+                        </form>
+                    </div>
+
+
+                    <div class="select-store">
+                        <form id='by_store_form' action="{% url 'display_part:detailbystore' store='xxx' when='xxx' %}" method="GET">
+                            <span>店舗ごと</span>
+                            <select id='store_select' name="store" type="text">
+                                <option value="default">選択してください</option>
+                                {% for store in cgy_list %}
+                                <option value="{{store}}">{{store}}</option>
+                                {% endfor %}
+                            </select>
+                            <select id='year_select' name="year" type="text">
+                                <option value="">選択して下さい</option>
+                            </select>
+                            <button type="submit" class="btn btn-dark">送信</button>
+                        </form>
+                    </div>
+                </div>
+                
+            {% endif %}
+
+        {% endif %}
+
+
+
+        <div class="container-fluid2">
+            <a href="{% url 'daily_report:home' %}" class="btn btn-primary btn-large">オート日報</a>
+        </div>
+        
+        <h4 class="predict_head">来店予測</h4>
+        <div class="predict">
+            <div class="predict_btn_wrap">
+            <h5>過去参考</h5>
+            {% for name,store in store_dict.items %}
+            <div class="predict-btn">
+                <span>{{name}}</span>
+                <form action="{% url 'prediction:show_chart' store_str=store %}">
+                    <select name="previous_date">
+                        {% for i in previous_date_list %}
+                        <option value="{{i}}">{{i}}</option>
+                        {% endfor %}
+                    </select>
+                    <br>
+                    <input type="submit">
+                </form>
+            </div>
+            {% endfor %}
+            </div>
+        </div>
+
+
+
+        <div class="predict_long">
+            <div class="predict_long_btn_wrap">
+                <h5>45日後まで</h5>
+                {% for name,store in store_dict.items %}
+                <div class="predict_long_btn">
+                    <p>{{name}}</p>
+                    <form action="{% url 'prediction:show_chart_long' store_str=store %}" class='this_month_btn'>
+                        <input type="submit" name='this_month' value='今月'>
+                    </form>
+                    <p class='small'>↓期間指定↓</p>
+                    <form action="{% url 'prediction:show_chart_long' store_str=store %}">
+                        <select name="pred_start_date">
+                            {% for i in pred_date_list %}
+                            <option value="{{i}}">{{i}}</option>
+                            {% endfor %}
+                        </select>
+                        <p>から</p>
+                        <select name="pred_end_date">
+                            {% for i in pred_date_list_reversed %}
+                            <option value="{{i}}">{{i}}</option>
+                            {% endfor %}
+                        </select>
+                        <br>
+                        <input type="submit">
+                    </form>
+                </div>
+                {% endfor %}
+            </div>
+        </div>
+
+
+
+
+        <div class="ubiregi-checker">
+            <div class="checker-container">
+                <div class="checker">
+                    <h4>ユビレジ取消チェッカー</h4>
+                    <p>中断・取消された会計と、考えられる判断材料<br>(卓番・金額・処理IDのいずれかが同一のもの)<br>を表示します。</p>
+                    <form action="{% url 'ubiregi_checker:delete_and_cancel_checker' %}" method="GET">
+                        {% if day_for_html %}
+                        <input type="text" id="datepicker" name="q" value="{{day_for_html}}">
+                        {% else %}
+                        <input type="text" id="datepicker" name="q" value="日にち選択">
+                        {% endif %}
+                        <input type="submit">
+                        <script src="{% static 'js/datepicker.js' %}"></script>
+                    </form>
+                </div>
+
+
+                {% if result_list %}
+                <div class="ubiregi-result">
+                    <h3>合計 {{total_count}} 件</h3>
+                    <p>一致する箇所を赤文字で表示<br>(時間は前後1時間以内のもの)</p>
+                    <table id="result-table">
+                        {% for result in result_list %}
+                        {% if "■" in result or "-----" in result or "〜" in result or "【" in result %}
+                        <tr>
+                            <td class="table-h" colspan="3">{{result}}</td>
+                        </tr>
+                        {% elif "処理ID" in result %}
+                        <tr>
+                            <td>{{result}}</td>
+                            {% elif "年" in result %}
+                            {% if "*" in result %}
+                            <td colspan="2" class="collation">{{result}}</td>
+                            {% else %}
+                            <td colspan="2">{{result}}</td>
+                            {% endif %}
+                        </tr>
+                        {% elif "卓" in result %}
+                        {% if "*" in result %}
+                        <td class="collation">{{result}}</td>
+                        {% else %}
+                        <td>{{result}}</td>
+                        {% endif %}
+
+                        {% elif "¥" in result %}
+                        {% if "*" in result %}
+                        <td class="collation">{{result}}</td>
+                        {% else %}
+                        <td>{{result}}</td>
+                        {% endif %}
+                        </tr>
+
+                        {% else %}
+                        <tr>
+                            <td>{{result}}</td>
+                            {% endif %}
+                            {% endfor %}
+                    </table>
+                </div>
+                {% endif %}
+            </div>
+
+            <div class="qr-code">
+                <p>LINE友達登録で営業後に自動通知きます。<br>(取消があれば)</p>
+                <img src="static/img/line_bot_qr.png" alt="QRコード">
+            </div>
+        </div>
+
+        <div class="func-btn">
+            <a href="{% url 'upload_part:admin_scr' %}" class="function-btn"><button>管理画面</button></a>
+            <a href="{% url 'upload_part:index' %}" class="function-btn"><button>取り込み</button></a>
+            <a href="{% url 'display_part:index' %}" class="function-btn"><button>リセット</button></a>
+        </div>
+
+        {% endblock content %}
+    </center>
+
+{% block script %}
+<script type='text/javascript'>
+
+$(function () {
+    $('#submit_select').change(function () {
+        $('#submit_form').submit();
+    });
+    $('#submit_select2').change(function () {
+        $('#submit_form').submit();
+    });
+    // $('#year_select').change(function () {
+    //     $('#by_store_form').submit();
+    // });
+})
+
+window.onload = function () {
+    store = document.getElementById("store_select");
+    store.onchange = changeStore;
+    year = document.getElementById("year_select");
+
+}
+
+function changeStore() {
+    var changedStore = store.value;
+    if (changedStore == "FES") {
+        setYears("fes");
+    } else if (changedStore == "Garage あそび") {
+        setYears("garage");
+    } else if (changedStore == "罠一目") {
+        setYears("wanaichi");
+    } else if (changedStore == "罠中目黒") {
+        setYears("wananakame");
+    } else if (changedStore == "灯篭") {
+        setYears("tourou");
+    } else if (changedStore == "Base\u3000あそび") {
+        setYears("baseasobi");
+    } else if (changedStore == "浦安あそび") {
+        setYears("urayasu");
+    } else if (changedStore == "本部") {
+        setYears("honnbu");
+    } else if (changedStore == "店舗合計") {
+        setYears("storeTotal");
+    } else if (changedStore == "合計") {
+        setYears("total");
+    } else if (changedStore == "reme(小顔矯正)") {
+        setYears("reme");
+    } else if (changedStore == "楽") {
+        setYears("tanoshi");
+    } else if (changedStore == "罠") {
+        setYears("wana");
+    } else if (changedStore == "よってこ") {
+        setYears("yotteko");
+    } else if (changedStore == "よってこ業務委託料") {
+        setYears("yottekoEntrust");
+    }
+}
+
+function setYears(store) {
+    year.textContent = null;
+    
+    if (store == "fes") {
+        var yearList = [
+            { cd: "", label: "選択して下さい" },
+            {%for y in year_list_fes %}
+            { cd: "{{y}}", label: "{{y}}" },
+            {% endfor %}
+        ];
+    } 
+    else if (store == "garage") {
+        var yearList = [
+            { cd: "", label: "選択して下さい" },
+            {%for y in year_list_garage %}
+            { cd: "{{y}}", label: "{{y}}" },
+            {% endfor %}
+        ];
+    } 
+    else if (store == "wanaichi") {
+        var yearList = [
+            { cd: "", label: "選択して下さい" },
+            {%for y in year_list_wanaichi %}
+            { cd: "{{y}}", label: "{{y}}" },
+            {% endfor %}
+        ];
+    } 
+    else if (store == "wananakame") {
+        var yearList = [
+            { cd: "", label: "選択して下さい" },
+            {%for y in year_list_wananakame %}
+            { cd: "{{y}}", label: "{{y}}" },
+            {% endfor %}
+        ];
+    } 
+    else if (store == "tourou") {
+        var yearList = [
+            { cd: "", label: "選択して下さい" },
+            {%for y in year_list_tourou %}
+            { cd: "{{y}}", label: "{{y}}" },
+            {% endfor %}
+        ];
+    } 
+    else if (store == "baseasobi") {
+        var yearList = [
+            { cd: "", label: "選択して下さい" },
+            {%for y in year_list_baseasobi %}
+            { cd: "{{y}}", label: "{{y}}" },
+            {% endfor %}
+        ];
+    } 
+    else if (store == "urayasu") {
+        var yearList = [
+            { cd: "", label: "選択して下さい" },
+            {%for y in year_list_urayasu %}
+            { cd: "{{y}}", label: "{{y}}" },
+            {% endfor %}
+        ];
+    } 
+    else if (store == "honnbu") {
+        var yearList = [
+            { cd: "", label: "選択して下さい" },
+            {%for y in year_list_honnbu %}
+            { cd: "{{y}}", label: "{{y}}" },
+            {% endfor %}
+        ];
+    } 
+    else if (store == "storeTotal") {
+        var yearList = [
+            { cd: "", label: "選択して下さい" },
+            {%for y in year_list_storeTotal %}
+            { cd: "{{y}}", label: "{{y}}" },
+            {% endfor %}
+        ];
+    } 
+    else if (store == "total") {
+        var yearList = [
+            { cd: "", label: "選択して下さい" },
+            {%for y in year_list_total %}
+            { cd: "{{y}}", label: "{{y}}" },
+            {% endfor %}
+        ];
+    } 
+    else if (store == "reme") {
+        var yearList = [
+            { cd: "", label: "選択して下さい" },
+            {%for y in year_list_reme %}
+            { cd: "{{y}}", label: "{{y}}" },
+            {% endfor %}
+        ];
+    } 
+    else if (store == "tanoshi") {
+        var yearList = [
+            { cd: "", label: "選択して下さい" },
+            {%for y in year_list_tanoshi %}
+            { cd: "{{y}}", label: "{{y}}" },
+            {% endfor %}
+        ];
+    } 
+    else if (store == "wana") {
+        var yearList = [
+            { cd: "", label: "選択して下さい" },
+            {%for y in year_list_wana %}
+            { cd: "{{y}}", label: "{{y}}" },
+            {% endfor %}
+        ];
+    } 
+    else if (store == "yotteko") {
+        var yearList = [
+            { cd: "", label: "選択して下さい" },
+            {%for y in year_list_yotteko %}
+            { cd: "{{y}}", label: "{{y}}" },
+            {% endfor %}
+        ];
+    } 
+    else if (store == "yottekoEntrust") {
+        var yearList = [
+            { cd: "", label: "選択して下さい" },
+            {%for y in year_list_yottekoEntrust %}
+            { cd: "{{y}}", label: "{{y}}" },
+            {% endfor %}
+        ];
+    }
+
+
+yearList.forEach(function (value) {
+    var op = document.createElement("option");
+    op.value = value.cd;
+    op.text = value.label;
+    year.appendChild(op);
+});
+}
+</script>
+{% endblock script %}
+
+
+
+    
+</body>

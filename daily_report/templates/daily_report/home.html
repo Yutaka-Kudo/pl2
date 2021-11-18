@@ -1,0 +1,188 @@
+{% extends "daily_report/layout.html" %}
+{% block content %}
+<div class="jumbotron">
+{% if user.is_authenticated %}
+	<h4>Welcome {{store_name}}</h4>
+	<p id="realtime"></p>
+	<h4><b>{{to_day}}分</b></h4><br>
+	<p>当日分は翌日<b>朝{{permit_over_hour}}時</b>までに処理してください。</p>
+	<p><b>更新する項目は全て上書きされます。</b><br>あらかじめ手動で入力している際は注意してください。</p>
+	<p>ファイルが(他アカウントからでも)開かれていると更新できず、複製が作られます。<br><u><b><span style="color:red;">注※</span> 以降はその複製を使います。ファイル名はそのまま変えないでください！</b></u><br>元のファイルは消して問題ありません。</p>
+
+	<a href="{% url 'daily_report:get_request_for_create' %}" class="btn btn-success createfile_btn">  来月のファイルを作成</a>
+
+	{% comment %} <form action="{% url 'daily_report:recording' %}" method="GET"> {% endcomment %}
+	<form action="{% url 'daily_report:get_request' %}" method="GET">
+
+	
+		{% if debug == "true" %}
+			{# デバッグ用 #}
+			<div>
+				デバッグ <input type="number" name="debug_date" value="{{debug_date}}"> 日<br>
+				<label><input type="radio" name="which_store" value="fes">fes</label>
+				<label><input type="radio" name="which_store" value="garage">garage</label>
+				<label><input type="radio" name="which_store" value="tourou">tourou</label>
+				<label><input type="radio" name="which_store" value="wanaichi">wanaichi</label>
+				<label><input type="radio" name="which_store" value="wananakame">wananakame</label>
+			</div>
+
+		{% endif %}
+
+		<div class="item_group food" >
+			<div class="row">
+				<div class="food_item col-sm-4 col-md-3 col-lg-2  form-group">
+					<label class="item_name">フード仕入1
+						<input type="number" name="food1" placeholder="0" class="inpt form-control">
+					</label>
+				</div>
+				<div class="food_item col-sm-4 col-md-3 col-lg-2  form-group">
+					<label class="item_name">フード仕入2
+						<input type="number" name="food2" placeholder="0" class="inpt form-control">
+					</label>
+				</div>
+				<div class="food_item col-sm-4 col-md-3 col-lg-2  form-group">
+					<label class="item_name">フード仕入3
+						<input type="number" name="food3" placeholder="0" class="inpt form-control">
+					</label>
+				</div>
+				<div class="food_item col-sm-4 col-md-3 col-lg-2  form-group">
+					<label class="item_name">フード仕入4
+						<input type="number" name="food4" placeholder="0" class="inpt form-control">
+					</label>
+				</div>
+				<div class="food_item col-sm-4 col-md-3 col-lg-2  form-group">
+					<label class="item_name">フード仕入5
+						<input type="number" name="food5" placeholder="0" class="inpt form-control">
+					</label>
+				</div>
+				<div class="food_item col-sm-4 col-md-3 col-lg-2  form-group">
+					<label class="item_name">フード仕入6
+						<input type="number" name="food6" placeholder="0" class="inpt form-control">
+					</label>
+				</div>
+				<div class="food_item col-sm-4 col-md-3 col-lg-2  form-group">
+					<label class="item_name">フード仕入7
+						<input type="number" name="food7" placeholder="0" class="inpt form-control">
+					</label>
+				</div>
+				<div class="food_item col-sm-4 col-md-3 col-lg-2  form-group">
+					<label class="item_name">フード仕入8
+						<input type="number" name="food8" placeholder="0" class="inpt form-control">
+					</label>
+				</div>
+				<div class="food_item col-sm-4 col-md-3 col-lg-2  form-group">
+					<label class="item_name">フード仕入9
+						<input type="number" name="food9" placeholder="0" class="inpt form-control">
+					</label>
+				</div>
+				<div class="food_item col-sm-4 col-md-3 col-lg-2  form-group">
+					<label class="item_name">フード仕入10
+						<input type="number" name="food10" placeholder="0" class="inpt form-control">
+					</label>
+				</div>
+				<div class="food_item col-sm-4 col-md-3 col-lg-2  form-group">
+					<label class="item_name">フード仕入11
+						<input type="number" name="food11" placeholder="0" class="inpt form-control">
+					</label>
+				</div>
+				<div class="food_item col-sm-4 col-md-3 col-lg-2  form-group">
+					<label class="item_name">フード仕入12
+						<input type="number" name="food12" placeholder="0" class="inpt form-control">
+					</label>
+				</div>
+			</div>
+		</div>
+
+		<div class="item_group drink">
+			<div class="row">
+				<div class="drink_item col-sm-4 col-md-3 col-lg-2  form-group">
+					<label class="item_name">ドリンク仕入1
+						<input type="number" name="drink1" placeholder="0" class="inpt form-control">
+					</label>
+				</div>
+				<div class="drink_item col-sm-4 col-md-3 col-lg-2  form-group">
+					<label class="item_name">ドリンク仕入2
+						<input type="number" name="drink2" placeholder="0" class="inpt form-control">
+					</label>
+				</div>
+				<div class="drink_item col-sm-4 col-md-3 col-lg-2  form-group">
+					<label class="item_name">ドリンク仕入3
+						<input type="number" name="drink3" placeholder="0" class="inpt form-control">
+					</label>
+				</div>
+				<div class="drink_item col-sm-4 col-md-3 col-lg-2  form-group">
+					<label class="item_name">ドリンク仕入4
+						<input type="number" name="drink4" placeholder="0" class="inpt form-control">
+					</label>
+				</div>
+				<div class="drink_item col-sm-4 col-md-3 col-lg-2  form-group">
+					<label class="item_name">ドリンク仕入5
+						<input type="number" name="drink5" placeholder="0" class="inpt form-control">
+					</label>
+				</div>
+				<div class="drink_item col-sm-4 col-md-3 col-lg-2  form-group">
+					<label class="item_name">ドリンク仕入6
+						<input type="number" name="drink6" placeholder="0" class="inpt form-control">
+					</label>
+				</div>
+			</div>
+		</div>
+
+		<div class="item_group others">
+			<div class="row">
+				<div class="other_item col-sm-4 col-md-3 col-lg-2  form-group">
+					<label class="item_name">現金仕入
+						<input type="number" name="other1" placeholder="0" class="inpt form-control">
+					</label>
+				</div>
+				<div class="other_item col-sm-4 col-md-3 col-lg-2  form-group">
+					<label class="item_name">現金消耗品
+						<input type="number" name="other2" placeholder="0" class="inpt form-control">
+					</label>
+				</div>
+				<div class="other_item col-sm-4 col-md-3 col-lg-2  form-group">
+					<label class="item_name">その他出金
+						<input type="number" name="other3" placeholder="0" class="inpt form-control">
+					</label>
+				</div>
+				<div class="other_item col-sm-12 col-md-6 col-lg-6  form-group">
+					<label class="item_name">その他内訳
+						<textarea type="text" name="other4" placeholder="テキストで記入" class="inpt form-control" rows="3"></textarea>
+					</label>
+				</div>
+			</div>
+		</div>
+
+		<input type="submit" class="btn btn-success btn-large" value="日報記入">
+	
+	</form>
+
+
+{% else %}
+	<p id="realtime"></p>
+	<a href="{% url 'display_part:signin' %}" class="btn btn-primary btn-large">サインイン</a>
+	<ol>
+		<li>『サインイン』クリック</li>
+		<li>OneDrive(=microsoft)アカウント情報入力</li>
+		<li>アクセス権を許可</li>
+	</ol>
+{% endif %}
+
+
+</div>
+
+{% endblock %}
+
+{% block script %}
+<script>
+	var now = new Date();
+	document.getElementById('realtime').innerHTML = '<i>' + now.toLocaleString('ja-JP').slice(0,-3) + '</i>'
+
+	setInterval(
+		function(){
+			var now = new Date();
+			document.getElementById('realtime').innerHTML = '<i>' + now.toLocaleString('ja-JP').slice(0,-3) + '</i>'
+		},3000
+	)
+</script>
+{% endblock script %}

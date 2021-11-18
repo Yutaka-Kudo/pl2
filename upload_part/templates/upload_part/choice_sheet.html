@@ -1,0 +1,26 @@
+{% extends 'display_part/index.html' %}
+
+
+
+
+
+{% block content %}
+
+<h1>ファイルをアップロード</h1>
+<form action="{% url 'upload_part:excel_up' %}" method="GET">
+    <select name="sheet" type="text">
+        <option value="default">選択してください</option>
+        {% for sheet in sheet_list %}
+        <option value="{{sheet}}">{{sheet}}</option>
+        {% endfor %}
+    </select>
+    <select name="month" type="text">
+        <option value="default">選択してください</option>
+        {% for month in month_list %}
+        <option value="{{month}}">{{month}}月</option>
+        {% endfor %}
+    </select>
+    <button type="submit">アップロード</button>
+</form>
+
+{% endblock content %}

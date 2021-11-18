@@ -1,0 +1,121 @@
+{% extends 'display_part/layout.html' %}
+{% load static %}
+
+{% block content %}
+<div class="jumbotron">
+    {% if user.super %}
+        {% for cost in costs %}
+            <form action="{% url 'display_part:manage_costs' %}" method="GET">
+                <div class="row">
+                    {% for cost_k,cost_v in cost.items %}
+                        {% for dbdict_k,dbdict_v in dbdict.items %}
+                            {% if cost_k == dbdict_k %}
+                                {% if cost_k == "id" %}
+                                    <input type="hidden" name="{{cost_k}}" id="" value="{{cost_v}}">
+                                {% elif cost_k == "store" %}
+                                    <div class="form-group col-md-12">
+                                        <h4>{{cost_v}}</h4>
+                                    </div>
+                                {% else %}
+                                    <div class="form-group col-md-3 flex-column">
+                                        <label style="font-size:.5rem;">
+                                            {{dbdict_v}}
+                                            <input type="number" name="{{cost_k}}" id="" value="{{cost_v}}" class="form-control">
+                                        </label>
+                                        <div>
+                                        
+                                        {% if dbdict_v == "バイト時給" or dbdict_v == "社員給料" or dbdict_v == "家賃" or dbdict_v == "家賃更新代" or dbdict_v == "家賃更新頻度/年" or dbdict_v == "夢屋ライセンスフィー" %}
+                                            <input type="submit" class="btn btn-warning col-md-12 " style="font-size:16px;" name="auto_{{cost_k}}" value="" disabled>
+                                        {% else %}
+                                            <input type="submit" class="btn btn-warning col-md-12 " style="font-size:16px;" name="auto_{{cost_k}}" value="収支表から自動更新">
+                                        {% endif %}
+                                            
+                                        </div>
+                                    </div>
+                                {% endif %}
+                            {% endif %}
+                        {% endfor %}
+                    {% endfor %}
+                    <input type="submit" class="btn btn-success btn-large col-md-2" style="height:50px;" name="update" value="変更">
+                    {% comment %} <input type="submit" class="btn btn-warning btn-large col-md-2" style="height:50px;" name="auto" value="収支表から自動更新"> {% endcomment %}
+                </div>
+            </form>
+
+        {% endfor %}
+
+        
+
+
+        <center><h2>管理者</h2></center>
+        {% for man in managers %}
+            <form action="{% url 'display_part:manage_manager' %}" method="GET">
+                <div class="row">
+                    {% for k,v in man.items %}
+                        {% if k == "id" %}
+                            <div class="form-group col-md-1">
+                                <label>{{k}}
+                                    <input type="text" name="id" id="" class="form-control" value={{v}} readonly>
+                                </label>
+                            </div>
+                        {% elif k == "name" %}
+                            <div class="form-group col-md-2">
+                                <label>{{k}}
+                                    <input type="text" name="name" id="" class="form-control" value="{{v}}">
+                                </label>
+                            </div>
+                        {% elif k == "email" %}
+                            <div class="form-group col-md-5">
+                                <label>{{k}}
+                                    <input type="text" name="email" id="" class="form-control" value={{v}}>
+                                </label>
+                            </div>
+                        {% elif k == "c_d_permission" %}
+                            <div class="form-group col-md-2">
+                                <label>登録と削除権限
+                                {% if v == True %}
+                                    <input type="checkbox" name="c_d_permission" id="" class="form-control" checked>
+                                {% else %}
+                                    <input type="checkbox" name="c_d_permission" id="" class="form-control">
+                                {% endif %}
+                                </label>
+                            </div>
+                        {% endif %}
+                    {% endfor %}
+                    <input type="submit" class="btn btn-success btn-large col-md-1" style="height:50px;" name="update" value="変更">
+                    <input type="submit" class="btn btn-warning btn-large col-md-1" style="height:50px;" name="delete" value="削除">
+                </div>
+            </form>
+        {% endfor %}
+
+        <form action="{% url 'display_part:manage_manager' %}" method="GET">
+            <div class="row">
+                        <div class="form-group col-md-1">
+                            <label>id
+                                <input type="text" name="id" id="" class="form-control" value="新規" readonly>
+                            </label>
+                        </div>
+                        <div class="form-group col-md-2">
+                            <label>name
+                                <input type="text" name="name" id="" class="form-control" value={{v}}>
+                            </label>
+                        </div>
+                        <div class="form-group col-md-5">
+                            <label>email
+                                <input type="text" name="email" id="" class="form-control" value={{v}}>
+                            </label>
+                        </div>
+                        <div class="form-group col-md-2">
+                            <label>登録と削除権限
+                                <input type="checkbox" name="c_d_permission" id="" class="form-control">
+                            </label>
+                        </div>
+                <input type="submit" class="btn btn-success btn-large col-md-1" style="height:50px;" name="regist" value="登録">
+            </div>
+        </form>
+
+
+    {% endif %}
+    
+
+</div>
+{% endblock content %}

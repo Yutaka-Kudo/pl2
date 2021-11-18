@@ -1,0 +1,172 @@
+.pie_wrap{
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: space-around;
+}
+.pie{
+    /* width: 33%; */
+    margin: 0 0px 60px 0px;
+    /* min-width: 270px; */
+}
+.pie_str{
+    background-color: rgba(54, 162, 235, 0.5);
+    width: 30%;
+    padding: 5px;
+    margin-bottom: 10px;
+    border-radius: 10px;
+}
+
+.cost_bar_wrap{
+    /* display: flex; */
+    /* flex-wrap: wrap; */
+    /* justify-content: space-around; */
+}
+.bar{
+    /* height: 400px; */
+    /* width: 33%; */
+    /* margin: 0 0px 60px 0px; */
+    /* min-width: 270px; */
+}
+.bar_str{
+    background-color: rgba(255, 159, 64, 0.5);
+    width: 30%;
+    padding: 5px;
+    margin-bottom: 60px;
+    border-radius: 10px;
+}
+
+.fade-enter-active, .fade-leave-active{
+    /* transition: opacity 1.5s; */
+    transition-duration: .3s;
+    transform-origin: top;
+
+}
+.fade-enter, .fade-leave-to{
+    /* opacity:0; */
+    transform: scaleY(0);
+}
+
+/* アニメーションのテスト */
+/* @keyframes fadeIn{
+    0%{
+        opacity: 0;
+    }
+    100%{
+        opacity: 1;
+    }
+}
+.pie_destruction{
+    animation-name: fadeIn;
+    animation-duration: 1s;
+    animation-iteration-count: 4;
+    animation-direction: alternate;
+} */
+
+
+
+
+.chart_selector{
+    position: fixed;
+    width: auto;
+    font-size: 13px;
+    border: 2px solid;
+    background-color: white;
+    padding: 2px;
+    top: 10px;
+    right: 20px;
+    /* transform: translate(-50%, -50%); */
+    /* transform: translateX(-100%); */
+}
+
+
+.wrap_chart{
+    width: 100%;
+    height: 380px;
+    margin-top: 30px;
+}
+
+.chart_lunch{
+    /* height: 800px; */
+    /* display: inline-block; */
+    margin-top: 20px;
+}
+
+.df_table_wrapper{
+    margin-bottom: 30px;
+}
+.df_table_container{
+    width: 100%;
+    overflow-x: scroll;
+    -webkit-overflow-scrolling: touch;
+    
+}
+.df_table{
+    font-size: 12px;
+    table-layout: fixed;
+    width: 100%;
+}
+.df_table_index{
+    width: 60px;
+}
+.df_table_column{
+    width: 45px;
+}
+.df_table_wrapper span{
+    font-size: 12px;
+    display: block;
+}
+
+
+@media (max-width:860px){
+    .chart_selector{
+        margin: 0 auto;
+        width: 550px;
+        top: 10px;
+        left: 50%;
+        right: initial;
+        transform: translateX(-50%);
+    }
+    .date_selector ,.store_selector{
+        display: inline-block;
+    }
+    .wrap_chart{
+        margin-top: 50px;
+    }
+
+    .df_table_wrapper{
+        margin-bottom: 60px;
+    }
+}
+
+
+@media screen and (max-width:480px){
+    .chart_selector{
+        position: static;
+        width: 350px;
+        border: 1px solid;
+        margin-top: 10px;
+        left: initial;
+        transform: initial;
+    }
+    .date_selector ,.store_selector{
+        display: block;
+    }
+
+    .wrap_chart{
+        width: 100%;
+        height: 350px;
+        margin-top: 0px;
+    }
+    .chart_lunch{
+        margin-top: 0;
+    }
+
+    .df_table_wrapper{
+        margin-bottom: 60px;
+    }
+    .df_table {
+		width: 100%;
+		overflow-x: scroll;
+	}
+}
+

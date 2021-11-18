@@ -1,0 +1,293 @@
+{% extends 'display_part/index.html' %}
+{% load static %}
+{% block nav %}{% endblock nav %}
+
+{% block content %}
+<form class="chart_selector" action="{% url 'prediction:show_chart' store_str=store_str %}" method="GET" id="submit_form">
+    <div class="date_selector">
+    <input type="submit" name="move" value='before'>
+    <select name="previous_date" id="submit_select">
+        {% for date in previous_date_list %}
+        <option value="{{date}}">{{date}}</option>
+        {% endfor %}
+    </select>
+    <input type="submit" name="move" value='after'>
+    </div>
+    <div class="store_selector">
+    <input type="submit" name="store"  value="FES">
+    <input type="submit" name="store"  value="Garage">
+    <input type="submit" name="store"  value="灯篭">
+    <input type="submit" name="store"  value="罠一目">
+    <input type="submit" name="store"  value="罠中目黒">
+    </div>
+</form>
+<div class="wrap_chart">
+    <canvas class="chart_lunch" id='fesLunchChart' height="100"></canvas>
+</div>
+
+<div class="df_table_wrapper">
+    <div class="df_table_container">
+        <div class="df_table">
+            <table border="3">
+                <tr>
+                    <th></th>
+                    {% for day in dayList %}
+                    <th>{{day}}</th>
+                    {% endfor %}
+                </tr>
+                <tr>
+                    <td>予測</td>
+                    {% for p in pred_l %}
+                        <td>
+                            {{p}}名
+                        </td>
+                    {% endfor %}
+                </tr>
+                <tr>
+                    <td>日ごと売上</td>
+                    {% for s in pred_daily_sales_l %}
+                        <td>
+                            {{s}}万
+                        </td>
+                    {% endfor %}
+                </tr>
+                <tr>
+                    <td>累計売上</td>
+                    {% for s in pred_amount_sales_forTable_l %}
+                        <td>
+                            {{s}}万
+                        </td>
+                    {% endfor %}
+                </tr>
+                <tr>
+                    <td></td>
+                    {% comment %} 空白 {% endcomment %}
+                    {% for p in required_people_l %}
+                    <td></td>
+                    {% endfor %}
+                </tr>
+                <tr>
+                    <td>実際</td>
+                    {% for a in actually_l %}
+                        <td>
+                            {{a}}名
+                        </td>
+                    {% endfor %}
+                </tr>
+                <tr>
+                    <td>日ごと売上</td>
+                    {% for s in actually_daily_sales_l %}
+                        <td>
+                            {{s}}万
+                        </td>
+                    {% endfor %}
+                </tr>
+                <tr>
+                    <td>累計売上</td>
+                    {% for s in actually_amount_sales_l_forTable %}
+                        <td>
+                            {{s}}万
+                        </td>
+                    {% endfor %}
+                </tr>
+
+            </table>
+            <span>(過去2ヶ月参照)☀単価{{unit_price_l}}円</span>
+            <span>正確率 ☀{{accuracy_l}}</span>
+        </div>
+    </div>
+</div>
+
+<div class="wrap_chart">
+    <canvas id='fesDinnerChart' height="100"></canvas>
+</div>
+
+<div class="df_table_wrapper">
+    <div class="df_table_container">
+        <div class="df_table">
+            <table border="3">
+                <tr>
+                    <th></th>
+                    {% for day in dayList %}
+                    <th>{{day}}</th>
+                    {% endfor %}
+                </tr>
+                <tr>
+                    <td>予測</td>
+                    {% for p in pred_d %}
+                        <td>
+                            {{p}}名
+                        </td>
+                    {% endfor %}
+                </tr>
+                <tr>
+                    <td>日ごと売上</td>
+                    {% for s in pred_daily_sales_d %}
+                        <td>
+                            {{s}}万
+                        </td>
+                    {% endfor %}
+                </tr>
+                <tr>
+                    <td>累計売上</td>
+                    {% for s in pred_amount_sales_forTable_d %}
+                        <td>
+                            {{s}}万
+                        </td>
+                    {% endfor %}
+                </tr>
+                <tr>
+                    <td></td>
+                    {% comment %} 空白 {% endcomment %}
+                    {% for p in required_people_d %}
+                    <td></td>
+                    {% endfor %}
+                </tr>
+                <tr>
+                    <td>実際</td>
+                    {% for a in actually_d %}
+                        <td>
+                            {{a}}名
+                        </td>
+                    {% endfor %}
+                </tr>
+                <tr>
+                    <td>日ごと売上</td>
+                    {% for s in actually_daily_sales_d %}
+                        <td>
+                            {{s}}万
+                        </td>
+                    {% endfor %}
+                </tr>
+                <tr>
+                    <td>累計売上</td>
+                    {% for s in actually_amount_sales_d_forTable %}
+                        <td>
+                            {{s}}万
+                        </td>
+                    {% endfor %}
+                </tr>
+
+
+            </table>
+            <span>(過去2ヶ月参照)🌙単価{{unit_price_d}}円</span>
+            <span>正確率 🌙{{accuracy_d}}</span>
+        </div>
+    </div>
+</div>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.7.1/Chart.min.js"></script>
+<script>
+
+var select = document.getElementById('submit_select');
+select.value = '{{ previous_date }}'
+console.log(select);
+
+    // ーーーー昼ーーーーー
+    const list = [];
+    {% for i in xticks %}
+    list.push("{{i}}")
+    {% endfor %}
+
+    new Chart(document.getElementById("fesLunchChart"), {
+        type: "line",
+        data: {
+            labels: list,
+            datasets: [{
+                label: "予測 {{pred_total_l}}名",
+                data: {{ pred_l }},
+                borderColor: ["rgb(255, 99, 132)"],
+                lineTension: 0,
+                fill: false,
+                // borderWidth:
+            }, {
+                label: "実際客数 {{actu_total_l}}名",
+                data: {{ actually_l }},
+                borderColor: ["rgb(25, 99, 132)"],
+                lineTension: 0,
+                fill: false,
+                // borderWidth:
+            },],
+        },
+        options: {
+        title: {
+            display: true,
+            text: '{{store_str}}:ランチ'
+        },
+        scales: {
+            yAxes: [{
+                ticks: {
+                    min: 0,
+                    max: 100,
+                    // stepSize: 10,
+                },
+            }],
+
+            xAxes: [{
+                ticks: {
+                    autoSkip: false,
+                    maxRotation: 70,
+                    minRotation: 70,
+                }
+            }]
+        },
+        maintainAspectRatio: false,
+    }
+    });
+
+
+    // ーーーーーーよるーーーーーー
+    const list_d = [];
+    {% for i in xticks %}
+    list_d.push("{{i}}")
+    {% endfor %}
+
+    new Chart(document.getElementById("fesDinnerChart"), {
+        type: "line",
+        data: {
+            labels: list_d,
+            datasets: [{
+                label: "予測 {{pred_total_d}}名",
+                data: {{ pred_d }},
+                borderColor: ["rgb(255, 99, 132)"],
+                lineTension: 0,
+                fill: false,
+                        // borderWidth:
+            }, {
+                label: "実際客数 {{actu_total_d}}名",
+                data: {{ actually_d }},
+                borderColor: ["rgb(25, 99, 132)"],
+                lineTension: 0,
+                fill: false,
+                // borderWidth:
+            },],
+        },
+        options: {
+            title: {
+                display: true,
+                text: '{{store_str}}ディナー'
+            },
+            scales: {
+                yAxes: [{
+                    ticks: {
+                        min: 0,
+                        max: 100,
+                        // stepSize: 10,
+                    },
+
+                }],
+
+                xAxes: [{
+                    ticks: {
+                        autoSkip: false,
+                        maxRotation: 70,
+                        minRotation: 70,
+                    }
+                }]
+            },
+            maintainAspectRatio: false,
+
+        }
+    });
+</script>
+{% endblock content %}

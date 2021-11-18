@@ -1,0 +1,6 @@
+__pycache__/
+*.pyc
+local_settings.py
+# /media/
+ubiregi_pw
+.env

@@ -1,0 +1,116 @@
+<html lang="ja">
+<head>
+    <meta charset="utf-8" />
+    <!-- Required meta tags -->
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+
+    <!-- Bootstrap CSS -->
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css"
+        integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous">
+
+    <!-- jQuery,Popper.js,Bootstrap JS -->
+    <script src="https://code.jquery.com/jquery-3.4.1.min.js"
+        integrity="sha256-CSXorXvZcTkaix6Yvo6HppcZGetbYMGWSFlBw8HfCJo=" crossorigin="anonymous"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.7/umd/popper.min.js"
+        integrity="sha384-UO2eT0CpHqdSJQ6hJty5KVphtPhzWj9WO1clHTMGa3JDZwrnQq4sF86dIHNDz0W1"
+        crossorigin="anonymous"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js"
+        integrity="sha384-JjSmVgyd0p3pXB1rRibZUAYoIIy6OrQ6VrjIEaFf/nJGzIxFDsf4x0xIM+B07jRM"
+        crossorigin="anonymous"></script>
+
+    <title>処理中</title>
+</head>
+<body>
+    <div class="container">
+        <div class="card">
+            <div class="card-header">
+                {% if what == "for_record" %}
+                    日報入力中...
+                {% elif what == "for_create" %}
+                    新ファイル作成中
+                {% endif %}
+            </div>
+            <div class="card-body">
+                <div id="progress"></div>
+                <div id="result"></div>
+                <div class="row">
+                    {% comment %} <button class="btn btn-primary col-12" id="start_button">
+                        処理の実行
+                    </button> {% endcomment %}
+                </div>
+            </div>
+        </div>
+    </div>
+</body>
+</html>
+
+
+<script>
+    //プログレスバー表示部分の初期状態
+    const progresshtml = '<div id="progress"></div>';
+
+    let initial_data = JSON.parse('{{initial_data|safe}}')
+    console.log(initial_data)
+
+    //処理開始ボタンが押された時の処理
+    // $("#start_button").on("click", function (event) {
+    window.onload = function (event) {
+        console.log("start")
+        let timer_id = 0;
+        let url = "{% url 'daily_report:setup' %}"
+        // $("#start_button").attr({ "disabled": true })
+        //進捗管理インスタンス作成部分
+        $.get(url, {},
+            function (data) {
+                console.log("get")
+                let pk = data
+                console.log("progress_pk: " + data);
+
+                //プログレスバーを2秒ごとに取得開始
+                timer_id = setInterval(function () { ShowProgressBar(pk) }, 2000)
+                //時間のかかる処理を開始
+                GetResult(pk)
+            }
+        );
+        //プログレスバーの取得
+        function ShowProgressBar(progress_pk) {
+            $.get("{% url 'daily_report:show_progress' %}", { progress_pk: progress_pk },
+                function (data) {
+                    //console.log("Data Loaded: " + data);
+                    $("#progress").replaceWith(data)
+                }
+            );
+        }
+        //時間のかかる処理
+        function GetResult(progress_pk) {
+            let url2 = ''
+            if(initial_data.what == 'for_record'){
+                url2 = "{% url 'daily_report:recording_bg' %}"
+            }else if(initial_data.what == 'for_create'){
+                url2 = "{% url 'daily_report:create_next_file_bg' %}"
+            }
+            $.get(url2, { progress_pk: progress_pk,initial_data:JSON.stringify(initial_data) },
+                function (data) {
+                    console.log("Data Loaded: " + data);
+                    //プログレスバー更新をやめる
+                    clearInterval(timer_id);
+
+                    //処理結果表示
+                    $("#result").replaceWith(data)
+                    let judge = document.getElementById("judge").getAttribute('value')
+                    $(".card-header").replaceWith(judge)
+                    // $("#start_button").attr({ "disabled": false })
+                    alert(judge)
+                    if(judge == 'success'){
+                        //プログレスバーを100％に
+                        document.getElementsByClassName("progress-bar")[0].setAttribute('style','width:100%')
+                    }else{
+                        //プログレスバー部分を元の状態に戻す
+                        $("#progress").replaceWith(progresshtml)
+                    }
+                }
+            );
+        }
+    };
+</script>

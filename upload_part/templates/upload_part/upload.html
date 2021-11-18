@@ -1,0 +1,27 @@
+{% extends 'display_part/index.html' %}
+
+
+
+
+
+{% block content %}
+<div class="jumbotron">
+
+    <h1>ファイルを選択</h1>
+    <form action="{% url 'upload_part:show_sheetname' %}" method="POST" enctype="multipart/form-data">
+    {% csrf_token %}
+    <input type="file" name="testfile">
+    <button type="submit">決定</button>
+    </form>
+
+    {% if messages %}
+    <ul>
+    <li> </li>
+    <li>結果確認</li>
+    {% for msg in messages%}
+    <li>{{msg}}</li>
+    {% endfor %}
+    </ul>
+    {% endif %}
+</div>
+{% endblock content %}

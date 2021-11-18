@@ -1,0 +1,64 @@
+{% extends 'display_part/index.html' %}
+{% load display_part_tags %}
+{% load static %}
+
+{% block nav %}{% endblock nav %}
+
+{% block content %}
+
+{{kinds}}
+<table id="categorytable" border="5">
+    {% for index, cols in df.iteritems %}
+    {% if index == "店名" %}
+    <tr>
+        <th class='tindex fixed01 ' style="background-color: lightblue;font-size: 20px; font-weight: lighter;">
+            {% comment %} <a href="{% url 'display_part:chart' flg='month' %}">グラフ</a> {% endcomment %}
+        </th>
+        {% for col in cols %}
+            <th class='toprow' style="background-color: lightblue; font-size: 16px; width: 80px; height:80px;">
+                {% if col != "合計" %}
+                    <a href="{% url 'display_part:detailbystore' store=col|urlencode:'' when=year %}">
+                        {{ col }}
+                    </a>
+                {% else %}
+                    {{ col }}
+                {% endif %}
+                    
+            </th>
+        {% endfor %}
+    </tr>
+
+    {% elif index == "合計" %}
+    <tr>
+        <th class='' style="background-color: lightblue; font-weight: lighter;">
+            {{index}}
+        </th>
+        {% for col in cols %}
+            <th class='alignright' style="background-color: lightblue;">
+                {{ col }}
+            </th>
+        {% endfor %}
+    </tr>
+
+
+
+    {% else %}
+        <tr>
+            <td class='left-col' style="font-size: 10px;">
+                <a href="{% url 'display_part:detailbymonth' when=index|urlencode:'' %}">
+                    {{ index }}
+                </a>
+            </td>
+            {% for col in cols %}
+                <td class="alignright" style="font-size: 10px;">{{ col }}</td>
+            {% endfor %}
+        </tr>
+    {% endif %}
+    {% endfor %}
+
+</table>
+<a href="{% url 'display_part:output_excel' flag='1' %}" class="dl-btn"><button>Excelでダウンロード</button></a>
+
+<script src="{% static 'js/main.js' %}"></script>
+
+{% endblock content %}

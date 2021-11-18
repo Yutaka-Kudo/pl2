@@ -1,0 +1,257 @@
+{% extends 'display_part/index.html' %}
+{% load static %}
+{% load humanize %}
+
+{% block nav %}{% endblock nav %}
+
+{% block content %}
+<div id="bar_sales">
+  <bar_sales :data='data' :options='options'></bar_sales>
+</div>
+
+<p class="pie_destruction" style="font-size:10px; text-align:left; margin:10px 0 0 10px;">
+    <b>※注</b> 円チャートは支出と利益の合計からパーセンテージを出しているため、<br><b style="color:red;">マイナス利益</b>の場合は実際の収支表のパーセンテージと異なる。(売上ではなく、支出全体に対しての割合になる)
+</p>
+
+<div id="cost_graph_wrap" class="cost_graph_wrap">
+    <transition name="fade">
+    <div v-show="seen" @click="seen = !seen" class="pie_wrap" >
+        {% for date in data_dict %}
+            <div id="pie_costs{{forloop.counter}}" class="pie" v-pre>
+                <pie_costs :data='data' :options='options'></pie_costs>
+            </div>
+        {% endfor %}
+    </div>
+    </transition>
+    <div v-show="!seen" @click="seen = !seen" class="pie_str">
+    円チャート
+    </div>
+</div>
+<div id="cost_bar_wrap" class="cost_bar_wrap">
+    <transition name="fade">
+    <div v-show="seen"  @click="seen = !seen" class="cost_bar_wrap" >
+        {% for costs in cost_dict %}
+            <div id="bar_costs{{forloop.counter}}" class="bar" v-pre>
+                <bar_costs :data='data' :options='options'></bar_costs>
+            </div>
+        {% endfor %}
+    </div>
+    </transition>
+    <div v-show="!seen" @click="seen = !seen" class="bar_str">
+    棒チャート
+    </div>
+</div>
+
+{% endblock content %}
+
+{% block script %}
+{% comment %} vue {% endcomment %}
+<script src="https://cdn.jsdelivr.net/npm/vue/dist/vue.js"></script>
+
+{% comment %} vue-chart.js {% endcomment %}
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.7.1/Chart.min.js"></script>
+<script src="https://unpkg.com/vue-chartjs/dist/vue-chartjs.min.js"></script>
+
+<script src="{% static 'js/chart.js' %}"></script>
+
+{{ date_list|json_script:"date_list" }} 
+{{ label_index|json_script:"label_index" }} 
+
+<script>
+ //文字列リスト等に必要。単品文字列は"波括弧"でいける。
+const date_list = JSON.parse(document.getElementById('date_list').textContent);
+const label_index = JSON.parse(document.getElementById('label_index').textContent);
+
+new Vue({
+    delimiters: ["[[", "]]"],
+    el:"#bar_sales",
+    mounted:function(){
+        //console.log(date_list)
+    },
+    data(){
+        return{
+            data: {
+                labels: date_list,
+                datasets: [
+                    {
+                        label: '',
+                        backgroundColor: '#f87979',
+                        data: {{sales_list}},
+                    }
+                ]
+            },
+            options: {
+                title: {
+                    display: true,
+                    text: `{{store}} ${date_list[0].slice(0,4)}年 売上`,
+                    fontSize:20,
+                },
+                legend:{
+                    display:false,
+                },
+                scales: {
+                    yAxes: [{
+                        ticks: {
+                            min: 0,
+                            //max: 10000000,
+                            // stepSize: 100,
+                        },
+
+                    }],
+
+                    xAxes: [{
+                        ticks: {
+                            autoSkip: false,
+                            maxRotation: 45,
+                            minRotation: 45,
+                        }
+                    }]
+                },
+                responsive: true, 
+                maintainAspectRatio: false,
+            },
+        }
+    }
+})
+
+new Vue({
+    delimiters: ["[[", "]]"],
+    el:"#cost_graph_wrap",
+    data(){
+        return{
+            seen:true,
+        }
+    }
+})
+new Vue({
+    delimiters: ["[[", "]]"],
+    el:"#cost_bar_wrap",
+    data(){
+        return{
+            seen:true,
+        }
+    }
+})
+
+{% for date,v in data_dict.items %}
+var total_v = {{v | slice:"1:"}}.reduce((sum,elem)=>sum+elem)
+var persent_arr = {{v | slice:"1:"}}.map((value)=>Math.round((value/total_v)*1000)/10 + "%")
+new Vue({
+    delimiters: ["[[", "]]"],
+    el:"#pie_costs{{forloop.counter}}",
+    data(){
+        return{
+            switcher:true,
+            data: {
+                labels: label_index.map((value,index)=>value+" "+persent_arr[index]),
+                datasets: [
+                    {
+                        label: 'Bar Dataset',
+                        data: {{v | slice:"1:"}},
+                        backgroundColor: [
+                            'rgba(255, 99, 132, 0.2)',
+                            'rgba(54, 162, 235, 0.2)',
+                            'rgba(255, 206, 86, 0.2)',
+                            'rgba(75, 192, 192, 0.2)',
+                            'rgba(153, 102, 255, 0.2)',
+                            'rgba(255, 159, 64, 0.2)'
+                        ],
+                        borderColor: [
+                            'rgba(255, 99, 132, 0.5)',
+                            'rgba(54, 162, 235, 0.5)',
+                            'rgba(255, 206, 86, 0.5)',
+                            'rgba(75, 192, 192, 0.5)',
+                            'rgba(153, 102, 255, 0.5)',
+                            'rgba(255, 159, 64, 0.5)'
+                        ],
+                        borderWidth: 2,
+                        //borderAlignment: "inner",
+                        
+                    },
+                ]
+            },
+            options: {
+                title:{
+                    display:true,
+                    text: "{{date}}   売上¥ {{v.0 | intcomma}}",
+                    fontSize:20,
+                },
+                legend:{
+                    display:false,
+                    //fullWidth: false,
+                    labels:{
+                        fontSize:12,
+                        boxWidth:10,
+                        padding:13,
+                    }
+                },
+                tooltips:{
+                    enabled:true,
+                },
+                animation:{
+                    //animateRotate:true,
+                    animateScale:true,
+                },
+                responsive: true, 
+                maintainAspectRatio: false,
+
+            },
+        }
+    }
+})
+{% endfor %}
+
+{% for category, costs in cost_dict.items %}
+new Vue({
+    delimiters: ["[[", "]]"],
+    el:"#bar_costs{{forloop.counter}}",
+    data(){
+        return{
+            data:{
+                labels: date_list,
+                datasets: [
+                    {
+                        label: '',
+                        backgroundColor:'rgba(255, 99, 132, 0.5)',
+
+                        data: {{costs}},
+                    }
+                ]
+            },
+            options:{
+                title: {
+                    display: true,
+                    text: "{{category}}",
+                    fontSize:20,
+                },
+                legend:{
+                    display:false,
+                },
+                scales: {
+                    yAxes: [{
+                        ticks: {
+                            min: 0,
+                            //max: 10000000,
+                            // stepSize: 100,
+                        },
+
+                    }],
+
+                    xAxes: [{
+                        ticks: {
+                            autoSkip: false,
+                            maxRotation: 45,
+                            minRotation: 45,
+                        }
+                    }]
+                },
+                responsive: true, 
+                maintainAspectRatio: false,
+            }
+        }
+    }
+})
+{% endfor %}
+
+</script>
+{% endblock script %}

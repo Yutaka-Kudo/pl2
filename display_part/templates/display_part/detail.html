@@ -1,0 +1,237 @@
+{% extends 'display_part/index.html' %}
+{% load display_part_tags %}
+{% load static %}
+
+{% block nav %}{% endblock nav %}
+
+{% block content %}
+<table id="categorytable" border="5">
+    {% for index, cols in df.iteritems %}
+    {% if index == "日付" %}
+    <tr>
+        <th class='tindex fixed01 ' style="background-color: lightblue;font-size: 20px; font-weight: lighter;">
+            <a href="{% url 'display_part:chart' flg='month' %}">グラフ</a>
+        </th>
+        {% for col in cols %}
+        {% if "-" in col %}
+        <th class='toprow' style="background-color: rgb(236, 140, 62); font-size: 16px;">{{ col }}</th>
+        {% else %}
+        <th class='toprow' style="background-color: lightblue; font-size: 16px;">{{ col }}</th>
+        {% endif %}
+        {% endfor %}
+    </tr>
+    {% elif index == "カテゴリー" %}
+    <tr>
+        <td class='fixed02' style="background-color: lightblue; font-size: 10px;">{{ index }}</td>
+        {% for col in cols %}
+            {% if col and col != "合計" %}
+                <td class='second-row' style="background-color: lightblue; font-size: 17px; font-weight: bold;">
+                    <a href="{% url 'display_part:detailbystore' store=col|urlencode:'' when=df.日付|index:forloop.counter0|urlencode:'' %}">
+                        {{ col }}
+                    </a>
+                </td>
+            {% else %}
+                <td class='second-row' style="background-color: lightblue; font-size: 17px; font-weight: bold;">{{ col }}</td>
+            {% endif %}
+        {% endfor %}
+    </tr>
+    {% elif index == "総売上高" %}
+    <tr>
+        <td class='fixed03' style="background-color: rgb(222, 216, 135); font-weight: bold; font-size: 15px;">
+            <a href="{% url 'display_part:detailbypaytype' kinds=index|urlencode:'' %}">
+                {{ index }}
+            </a>
+        </td>
+        {% for col in cols %}
+            <td class="third-row alignright" style="background-color: rgb(222, 216, 135); font-size: 14px;">{{ col }}</td>
+        {% endfor %}
+    </tr>
+
+    {% elif index == "フード合計" %}
+    <tr>
+        <td class='left-col' style="background-color: lightgray;">
+            <a href="{% url 'display_part:detailbypaytype' kinds=index|urlencode:'' %}">
+                {{ index }}
+            </a>
+        </td>
+        {% for col in cols %}
+        <td class="alignright" style="background-color: lightgray;">{{ col }}</td>
+        {% endfor %}
+    </tr>
+
+    {% elif index == "ドリンク合計" %}
+    <tr>
+        <td class='left-col' style="background-color:lightgray;">
+            <a href="{% url 'display_part:detailbypaytype' kinds=index|urlencode:'' %}">
+                {{ index }}
+            </a>
+        </td>
+        {% for col in cols %}
+            <td class="alignright" style="background-color:lightgray;">{{ col }}</td>
+        {% endfor %}
+    </tr>
+
+    {% elif index == "仕入合計" %}
+    <tr>
+        <td class='left-col' style="background-color:rgb(170, 169, 169);">
+            <a href="{% url 'display_part:detailbypaytype' kinds=index|urlencode:'' %}">
+                {{ index }}
+            </a>
+        </td>
+        {% for col in cols %}
+            <td class="alignright" style="background-color:rgb(170, 169, 169);">{{ col }}</td>
+        {% endfor %}
+    </tr>
+    {% elif index == "人件費合計" %}
+    <tr>
+        <td class='left-col' style="background-color:rgb(170, 169, 169);">
+            <a href="{% url 'display_part:detailbypaytype' kinds=index|urlencode:'' %}">
+                {{ index }}
+            </a>
+        </td>
+        {% for col in cols %}
+            <td class="alignright" style="background-color:rgb(170, 169, 169);">{{ col }}</td>
+        {% endfor %}
+    </tr>
+    {% elif index == "Ｆ/Ｌ コスト" %}
+    <tr>
+        <td class='left-col' style="background-color:rgb(160, 160, 160); font-weight: bold;">
+            <a href="{% url 'display_part:detailbypaytype' kinds=index|urlencode:'' %}">
+                {{ index }}
+            </a>
+        </td>
+        {% for col in cols %}
+            <td class="alignright" style="background-color:rgb(160, 160, 160); font-weight: bold;">{{ col }}</td>
+        {% endfor %}
+    </tr>
+    {% elif index == "営業粗利" %}
+    <tr>
+        <td class='left-col' style="background-color:lightyellow;">
+            <a href="{% url 'display_part:detailbypaytype' kinds=index|urlencode:'' %}">
+                {{ index }}
+            </a>
+        </td>
+        {% for col in cols %}
+            <td class="alignright" style="background-color:lightyellow;">{{ col }}</td>
+        {% endfor %}
+    </tr>
+    {% elif index == "家賃" %}
+        <tr>
+            <td class='left-col' style="background-color:lightgray;">
+                <a href="{% url 'display_part:detailbypaytype' kinds=index|urlencode:'' %}">
+                    {{ index }}
+                </a>
+            </td>
+            {% for col in cols %}
+                <td class="alignright" style="background-color:lightgray;">{{ col }}</td>
+            {% endfor %}
+        </tr>
+    {% elif index == "光熱費・通信費　合計" %}
+    <tr>
+        <td class='left-col' style="background-color:lightgray;">
+            <a href="{% url 'display_part:detailbypaytype' kinds=index|urlencode:'' %}">
+                {{ index }}
+            </a>
+        </td>
+        {% for col in cols %}
+        <td class="alignright" style="background-color:lightgray;">{{ col }}</td>
+        {% endfor %}
+    </tr>
+    {% elif index == "宣伝・広告費　合計" %}
+    <tr>
+        <td class='left-col' style="background-color:lightgray;">
+            <a href="{% url 'display_part:detailbypaytype' kinds=index|urlencode:'' %}">
+                {{ index }}
+            </a>
+        </td>
+        {% for col in cols %}
+        <td class="alignright" style="background-color:lightgray;">{{ col }}</td>
+        {% endfor %}
+    </tr>
+    {% elif index == "雑費　合計" %}
+    <tr>
+        <td class='left-col' style="background-color:lightgray;">
+            <a href="{% url 'display_part:detailbypaytype' kinds=index|urlencode:'' %}">
+                {{ index }}
+            </a>
+        </td>
+        {% for col in cols %}
+        <td class="alignright" style="background-color:lightgray;">{{ col }}</td>
+        {% endfor %}
+    </tr>
+    {% elif index == "課税経費　合計" %}
+    <tr>
+        <td class='left-col' style="background-color:rgb(170, 169, 169);">
+            <a href="{% url 'display_part:detailbypaytype' kinds=index|urlencode:'' %}">
+                {{ index }}
+            </a>
+        </td>
+        {% for col in cols %}
+        <td class="alignright" style="background-color:rgb(170, 169, 169);">{{ col }}</td>
+        {% endfor %}
+    </tr>
+    {% elif index == "非課税経費　合計" %}
+    <tr>
+        <td class='left-col' style="background-color:rgb(170, 169, 169);">
+            <a href="{% url 'display_part:detailbypaytype' kinds=index|urlencode:'' %}">
+                {{ index }}
+            </a>
+        </td>
+        {% for col in cols %}
+        <td class="alignright" style="background-color:rgb(170, 169, 169);">{{ col }}</td>
+        {% endfor %}
+    </tr>
+    {% elif index == "経費　総計" %}
+    <tr>
+        <td class='left-col' style="background-color:rgb(170, 169, 169);">
+            <a href="{% url 'display_part:detailbypaytype' kinds=index|urlencode:'' %}">
+                {{ index }}
+            </a>
+        </td>
+        {% for col in cols %}
+        <td class="alignright" style="background-color:rgb(170, 169, 169);">{{ col }}</td>
+        {% endfor %}
+    </tr>
+    {% elif index == "経常利益額" %}
+    <tr>
+        <td class='left-col' style="background-color:lightyellow;">
+            <a href="{% url 'display_part:detailbypaytype' kinds=index|urlencode:'' %}">
+                {{ index }}
+            </a>
+        </td>
+        {% for col in cols %}
+        <td class="alignright" style="background-color:lightyellow;">{{ col }}</td>
+        {% endfor %}
+    </tr>
+    {% elif index == "税引き後利益" %}
+    <tr>
+        <td class='left-col' style="background-color:lightblue;">
+            <a href="{% url 'display_part:detailbypaytype' kinds=index|urlencode:'' %}">
+                {{ index }}
+            </a>
+        </td>
+        {% for col in cols %}
+        <td class="alignright" style="background-color:lightblue;">{{ col }}</td>
+        {% endfor %}
+    </tr>
+
+    {% else %}
+    <tr>
+        <td class='left-col' style="font-size: 10px;">
+            <a href="{% url 'display_part:detailbypaytype' kinds=index|urlencode:'' %}">
+                {{ index }}
+            </a>
+        </td>
+        {% for col in cols %}
+        <td class="alignright" style="font-size: 10px;">{{ col }}</td>
+        {% endfor %}
+    </tr>
+    {% endif %}
+    {% endfor %}
+
+</table>
+<a href="{% url 'display_part:output_excel' flag='1' %}" class="dl-btn"><button>Excelでダウンロード</button></a>
+
+<script src="{% static 'js/main.js' %}"></script>
+
+{% endblock content %}
