@@ -20,56 +20,52 @@
             {% endif %}
 
             <h4>{{store_name}} <span style="font-size:.8rem">としてログイン中<span></h4>
-            
-            {% if user.super %}
-                <div class="container-fluid2">
-                    <a href="{% url 'display_part:manage' %}" class="btn btn-info btn-large">各種設定</a>
-                </div>            
-            {% endif %}
-
-            {% if user.manager %}
-                <div class="container-fluid">
-                    <h4>収支表</h4>
-                    <div class="select-whole">
-                        <form action="{% url 'display_part:detailbymonth' when='xxx' %}" method="GET">
-                            <span>全体</span>
-                            <select name="year-select" type="text">
-                                <option value="default">年 選択</option>
-                                {% for year in year_list %}
-                                <option value="{{year}}">{{year}}年</option>
-                                {% endfor %}
-                            </select>
-                            <select name="month-select" type="text">
-                                <option value="default">月 選択</option>
-                                {% for month in month_list %}
-                                <option value="{{month}}">{{month}}月</option>
-                                {% endfor %}
-                            </select>
-                            <button type="submit" class="btn btn-dark">送信</button>
-                        </form>
-                    </div>
-
-
-                    <div class="select-store">
-                        <form id='by_store_form' action="{% url 'display_part:detailbystore' store='xxx' when='xxx' %}" method="GET">
-                            <span>店舗ごと</span>
-                            <select id='store_select' name="store" type="text">
-                                <option value="default">選択してください</option>
-                                {% for store in cgy_list %}
-                                <option value="{{store}}">{{store}}</option>
-                                {% endfor %}
-                            </select>
-                            <select id='year_select' name="year" type="text">
-                                <option value="">選択して下さい</option>
-                            </select>
-                            <button type="submit" class="btn btn-dark">送信</button>
-                        </form>
-                    </div>
-                </div>
-                
-            {% endif %}
-
         {% endif %}
+            
+        <div class="container-fluid2">
+            <a href="{% url 'display_part:manage' %}" class="btn btn-info btn-large">各種設定</a>
+        </div>
+
+        <div class="container-fluid">
+            <h4>収支表</h4>
+            <div class="select-whole">
+                <form action="{% url 'display_part:detailbymonth' when='xxx' %}" method="GET">
+                    <span>全体</span>
+                    <select name="year-select" type="text">
+                        <option value="default">年 選択</option>
+                        {% for year in year_list %}
+                        <option value="{{year}}">{{year}}年</option>
+                        {% endfor %}
+                    </select>
+                    <select name="month-select" type="text">
+                        <option value="default">月 選択</option>
+                        {% for month in month_list %}
+                        <option value="{{month}}">{{month}}月</option>
+                        {% endfor %}
+                    </select>
+                    <button type="submit" class="btn btn-dark">送信</button>
+                </form>
+            </div>
+
+
+            <div class="select-store">
+                <form id='by_store_form' action="{% url 'display_part:detailbystore' store='xxx' when='xxx' %}" method="GET">
+                    <span>店舗ごと</span>
+                    <select id='store_select' name="store" type="text">
+                        <option value="default">選択してください</option>
+                        {% for store in cgy_list %}
+                        <option value="{{store}}">{{store}}</option>
+                        {% endfor %}
+                    </select>
+                    <select id='year_select' name="year" type="text">
+                        <option value="">選択して下さい</option>
+                    </select>
+                    <button type="submit" class="btn btn-dark">送信</button>
+                </form>
+            </div>
+        </div>
+                
+
 
 
 

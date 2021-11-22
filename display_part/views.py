@@ -119,16 +119,16 @@ def index(request):
         "store_dict": store_dict,
     })
 
-    if context['user'].get('email'):
-        _, store_name = graph_helper.match_stores_by_email(context['user']['email'])
-        context['store_name'] = store_name
+    # if context['user'].get('email'):
+    # _, store_name = graph_helper.match_stores_by_email(context['user']['email'])
+    # context['store_name'] = store_name
 
-        confirm_permission(request)
-        context['user']['super'] = request.session['user'].get('super')
-        context['user']['manager'] = request.session['user'].get('manager')
+    # confirm_permission(request)
+    # context['user']['super'] = request.session['user'].get('super')
+    # context['user']['manager'] = request.session['user'].get('manager')
 
-        if request.session['user'].get('manager'):
-            context.update(pl_ini())
+    # if request.session['user'].get('manager'):
+    context.update(pl_ini())
 
     if settings.DEBUG:
         request.session['debug'] = 'true'
@@ -206,7 +206,7 @@ def sign_out(request):
 
 
 def manage(request):
-    confirm_permission(request)
+    # confirm_permission(request)
 
     dbdict = my_module.create_fieldname_dict(drmodels.Costs)
     costs = list(drmodels.Costs.objects.all().order_by('id').values())

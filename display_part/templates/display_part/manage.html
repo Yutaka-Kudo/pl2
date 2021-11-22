@@ -3,7 +3,7 @@
 
 {% block content %}
 <div class="jumbotron">
-    {% if user.super %}
+    {% comment %} {% if user.super %} {% endcomment %}
         {% for cost in costs %}
             <form action="{% url 'display_part:manage_costs' %}" method="GET">
                 <div class="row">
@@ -114,7 +114,7 @@
         </form>
 
 
-    {% endif %}
+    {% comment %} {% endif %} {% endcomment %}
     
 
 </div>
