@@ -32,7 +32,7 @@ class RecordingHelper():
 
         # browsing.DL_labor_and_put_csv(tmpdir.name, self.store_name_en, self.to_day, headless=True)
         # df = pandas.read_csv(os.path.join(tmpdir.name, os.listdir(tmpdir.name)[0]), encoding='shift-jis')
-        df = pandas.read_csv('daily_report/勤怠サンプル.csv', encoding='shift-jis')
+        df = pandas.read_csv('daily_report/勤怠サンプル.csv')
 
         tmpdir.cleanup()  # 一時ファイルを閉じる → 削除される
         self.df = df
