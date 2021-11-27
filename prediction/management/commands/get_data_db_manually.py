@@ -45,8 +45,8 @@ to_day = datetime.date(year, month, day)
 fes_key = os.environ["UBIREGI_FES_KEY"]
 garage_key = os.environ["UBIREGI_GARAGE_KEY"]
 tourou_key = os.environ["UBIREGI_TOUROU_KEY"]
-wanaichi_key = os.environ["UBIREGI_WANAICHI_KEY"]
-wananakame_key = os.environ["UBIREGI_WANANAKAME_KEY"]
+wanaichi_key = os.environ["UBIREGI_ICHI_KEY"]
+wananakame_key = os.environ["UBIREGI_NAKAME_KEY"]
 keydict = {"fes": fes_key, "garage": garage_key, "tourou": tourou_key, "wanaichi": wanaichi_key, "wananakame": wananakame_key}
 # keydict = {"fes": fes_key}
 
