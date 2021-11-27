@@ -1,10 +1,13 @@
 from site_package.my_module import ZEN2HAN, pl_dbdict
+from upload_part import models
 
 from pprint import pprint as pp
 import openpyxl
 from django.http.response import HttpResponse
 from django.shortcuts import redirect, render
-# import os
+import os
+import random
+import re
 
 
 def index(request):
@@ -35,11 +38,10 @@ def excel_up(request):
     # wb.sheetnames
     sheet = wb[sheet_name]
 
-    # # まとめて取得用 
+    # # まとめて取得用
     # months = month
     # for month in range(int(months),13):
     #     month = str(month)
-
 
     counter = 0
     # シート内最終カラム番号取得
@@ -118,7 +120,6 @@ def excel_up(request):
                 # raise Exception(f'項目名が一致しません{compare_list}')
                 return HttpResponse(f'項目名が一致しません{compare_list}')
 
-
             exceldata = dict(zip(pay_type_list[2:], value_list[2:]))  # 最初の2個は年月と店名なのでスキップ
             for pay_type, value in exceldata.items():
                 for model, each_dict in pl_dbdict.items():
@@ -158,3 +159,24 @@ def excel_up(request):
 #     print(row[0])
 # cnx.close()
 # ----sql------
+
+
+def swap_random():
+    all_objs = [models.FoodCosts.objects.all(), models.DrinkCosts.objects.all(), models.LaborCosts.objects.all(), models.UtilityCosts_ComunicationCosts.objects.all(),
+                models.AdvertisingCosts.objects.all(), models.OtherCosts.objects.all(), models.TaxExemptExpenses.objects.all()]
+
+    for objs in all_objs:
+        # ob.__doc__ = "DrinkCosts(id, pl_data, drink2, drink3, ..., drink11)" の形の文字列
+        re_pattern = re.compile(r'(?<=\(|\s).+?(?=,|\))')
+        # "(?<=\(|\s)" = "("かスペースの後から
+        # ".+?" = 任意の文字 1回以上 最短一致
+        # "(?=,|\))" = "," か ")" の前まで
+        attrs = re_pattern.findall(objs[0].__doc__)
+
+        attrs.remove('id')
+        attrs.remove('pl_data')
+        for ob in objs:
+            for attr in attrs:
+                if not getattr(ob, attr) is None:
+                    setattr(ob, attr, random.randint(1000, 10000))
+            ob.save()
