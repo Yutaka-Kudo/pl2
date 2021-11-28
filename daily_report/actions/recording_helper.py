@@ -7,6 +7,7 @@ import os
 from datetime import datetime, date
 import copy
 import calendar
+import random
 
 from daily_report.actions import browsing, ubiregi_helper
 from daily_report import models
@@ -32,7 +33,7 @@ class RecordingHelper():
 
         # browsing.DL_labor_and_put_csv(tmpdir.name, self.store_name_en, self.to_day, headless=True)
         # df = pandas.read_csv(os.path.join(tmpdir.name, os.listdir(tmpdir.name)[0]), encoding='shift-jis')
-        df = pandas.read_csv('daily_report/勤怠サンプル.csv', encoding='shift-jis')
+        df = pandas.read_csv('daily_report/勤怠サンプル.csv')
 
         tmpdir.cleanup()  # 一時ファイルを閉じる → 削除される
         self.df = df
@@ -165,6 +166,9 @@ class RecordingHelper():
 
         undiscovered_tags = []
         for s in self.res_ubiregiApi["checkouts"]:
+            
+            add_random = random.randint(10,10000)
+            
             # for key, value in media_id_dict.items():
             paid_at_time = datetime.fromisoformat(s["paid_at"].replace("Z", "+00:00"))
 
@@ -197,7 +201,7 @@ class RecordingHelper():
                     undiscovered_tags.append((s['customer_tag_ids'][-1], s['paid_at']))
 
                 sheet_sales.cell(rows[select_row_key], col_of_salesPage + add_col).value = s["customers_count"]
-                sheet_sales.cell(rows[select_row_key], col_of_salesPage + add_col + 1).value = round(float(s["price"]))
+                sheet_sales.cell(rows[select_row_key], col_of_salesPage + add_col + 1).value = round(float(s["price"])) + add_random
                 rows[select_row_key] += 1
 
                 # if s["customers_count"] >= 1:
@@ -230,7 +234,7 @@ class RecordingHelper():
                     undiscovered_tags.append((s['customer_tag_ids'][-1], s['paid_at']))
 
                 sheet_sales.cell(rows[select_row_key], col_of_salesPage + add_col).value = s["customers_count"]
-                sheet_sales.cell(rows[select_row_key], col_of_salesPage + add_col + 1).value = round(float(s["price"]))
+                sheet_sales.cell(rows[select_row_key], col_of_salesPage + add_col + 1).value = round(float(s["price"])) + add_random
                 rows[select_row_key] += 1
 
                 # if s["customers_count"] >= 1:
@@ -308,14 +312,16 @@ class RecordingHelper():
             other_cell = others_cell_list[i]
             sheet_purchasing.cell(*other_cell).value = int(s) if is_int(s) else s
         # 仕入ーーーーーーーーーーーーー
+        
+        add_random = random.randint(10,10000)
 
         # ポイントーーーーーーーーーーーーー
         hp_point_cell = [27, 2+int_of_day*1-1]
         tb_point_cell = move_cell_num(hp_point_cell, down=1)
         gn_point_cell = move_cell_num(hp_point_cell, down=2)
-        sheet_purchasing.cell(*hp_point_cell).value = used_point_hp
-        sheet_purchasing.cell(*tb_point_cell).value = used_point_tb
-        sheet_purchasing.cell(*gn_point_cell).value = used_point_gn
+        sheet_purchasing.cell(*hp_point_cell).value = used_point_hp + add_random
+        sheet_purchasing.cell(*tb_point_cell).value = used_point_tb + add_random
+        sheet_purchasing.cell(*gn_point_cell).value = used_point_gn + add_random
         # ポイントーーーーーーーーーーーーー
 
         # 支払い方法ーーーーーーーーーーーーー
@@ -325,12 +331,12 @@ class RecordingHelper():
         melpay_dbarai_cell = move_cell_num(credit_cell, down=3)
         aupay_cell = move_cell_num(credit_cell, down=4)
         goto_cell = move_cell_num(credit_cell, down=5)
-        sheet_purchasing.cell(*credit_cell).value = used_credit
-        sheet_purchasing.cell(*paypay_cell).value = used_paypay
-        sheet_purchasing.cell(*rakutenpay_cell).value = used_rakutenpay
-        sheet_purchasing.cell(*melpay_dbarai_cell).value = used_melpay_dbarai
-        sheet_purchasing.cell(*aupay_cell).value = used_aupay
-        sheet_purchasing.cell(*goto_cell).value = used_goto
+        sheet_purchasing.cell(*credit_cell).value = used_credit + add_random
+        sheet_purchasing.cell(*paypay_cell).value = used_paypay + add_random
+        sheet_purchasing.cell(*rakutenpay_cell).value = used_rakutenpay + add_random
+        sheet_purchasing.cell(*melpay_dbarai_cell).value = used_melpay_dbarai + add_random
+        sheet_purchasing.cell(*aupay_cell).value = used_aupay + add_random
+        sheet_purchasing.cell(*goto_cell).value = used_goto + add_random
         # 支払い方法ーーーーーーーーーーーーー
 
         return book
