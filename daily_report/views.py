@@ -1,6 +1,7 @@
 from django.shortcuts import render, get_object_or_404
 from django.http import HttpResponse, HttpResponseRedirect
 from django.urls import reverse
+from django.views.generic import TemplateView
 
 from openpyxl import Workbook
 
@@ -85,6 +86,24 @@ def home(request):
     return render(request, 'daily_report/home.html', context)
 
 
+class HomeTemplateView(TemplateView):
+    to_day, now = get_time()
+    template_name = 'daily_report/home.html'
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context.update(initialize_context(self.request))
+        context['now'] = self.now
+        context['to_day'] = self.to_day
+        context['permit_over_hour'] = permit_over_hour
+
+        if context['user'].get('email'):
+            _, store_name = match_stores_by_email(context['user']['email'])
+            context['store_name'] = store_name
+        context['debug'] = self.request.session.get('debug', 'false')
+        return context
+
+
 def initialize_context(request):
     context = {}
 
@@ -98,8 +117,6 @@ def initialize_context(request):
     # Check for user in the session
     context['user'] = request.session.get('user', {'is_authenticated': False})
     return context
-
-
 
 
 def get_request(request):
@@ -499,4 +516,3 @@ def create_next_file_bg(request):
     else:
         # progress_pkが指定されていない場合の処理
         return HttpResponse("エラー")
-
