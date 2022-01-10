@@ -1,10 +1,11 @@
 from django.urls import path
 
-from . import views
+from . import views, views_no_use
 
 app_name = "daily_report"
 urlpatterns = [
-    path('', views.home, name='home'),
+    path('', views_no_use.home, name='home'),
+    path('2', views.HomeTemplateView.as_view(), name='home2'),
     path('get_request', views.get_request, name='get_request'),
     path('get_request_for_create', views.get_request_for_create, name='get_request_for_create'),
     path('setup', views.setup, name='setup'),

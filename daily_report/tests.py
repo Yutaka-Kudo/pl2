@@ -14,11 +14,6 @@ load_dotenv()
 # Create your tests here.
 
 
-
-
-
-
-
 class Daily_reportTest(TestCase):
     def test_get_time(self):
         os.environ['TZ'] = 'Asia/Tokyo'

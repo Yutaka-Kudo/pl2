@@ -71,22 +71,19 @@ def get_time():  # 時刻を外に出してグローバルだとサーバー上�
     return to_day, now
 
 
-class HomeTemplateView(TemplateView):
+def home(request):
     to_day, now = get_time()
-    template_name = 'daily_report/home.html'
+    context = initialize_context(request)
+    context['to_day'] = to_day
+    context['now'] = now
+    context['permit_over_hour'] = permit_over_hour
+    if context['user'].get('email'):
+        _, store_name = match_stores_by_email(context['user']['email'])
+        context['store_name'] = store_name
 
-    def get_context_data(self, **kwargs):
-        context = super().get_context_data(**kwargs)
-        context.update(initialize_context(self.request))
-        context['now'] = self.now
-        context['to_day'] = self.to_day
-        context['permit_over_hour'] = permit_over_hour
+    context['debug'] = request.session.get('debug', 'false')
 
-        if context['user'].get('email'):
-            _, store_name = match_stores_by_email(context['user']['email'])
-            context['store_name'] = store_name
-        context['debug'] = self.request.session.get('debug', 'false')
-        return context
+    return render(request, 'daily_report/home.html', context)
 
 
 def initialize_context(request):
