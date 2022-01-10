@@ -36,6 +36,7 @@ livereload = "*"
 python-dotenv = "*"
 msal = "==1.10.0"
 icecream = "*"
+dictdiffer = "*"
 
 [dev-packages]
 flake8 = "*"
