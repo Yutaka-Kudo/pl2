@@ -6,7 +6,8 @@ app_name = "display_part"
 urlpatterns = [
     path('old', views_no_use.index, name='index_old'),
     path('', views.IndexTemplateView.as_view(), name='index'),
-    path('manage', views.manage, name='manage'),
+    path('manage2', views_no_use.manage, name='manage2'),
+    path('manage', views.ManageTemplateView.as_view(), name='manage'),
     path('manage_costs', views.manage_costs, name='manage_costs'),
     path('manage_manager', views.manage_manager, name='manage_manager'),
 

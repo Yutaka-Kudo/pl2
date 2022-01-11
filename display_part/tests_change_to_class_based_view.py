@@ -26,3 +26,17 @@ class IndexTest(TestCase):
         con1 = {k: v for k, v in con1.items() if k not in exclude_keylist}
         con2 = {k: v for k, v in con2.items() if k not in exclude_keylist}
         self.assertEqual(con1, con2)
+        
+    def test_manage_output(self):
+        # compare screen displays
+        res = self.client.get(reverse('display_part:manage2'))
+        res_as_view = self.client.get(reverse('display_part:manage'))
+        self.assertEqual(res.content, res_as_view.content)
+
+        # compare contexts
+        con1 = dict(res.context)
+        con2 = dict(res_as_view.context)
+        exclude_keylist = ['csrf_token', 'messages', 'perms', 'view', 'request']
+        con1 = {k: v for k, v in con1.items() if k not in exclude_keylist}
+        con2 = {k: v for k, v in con2.items() if k not in exclude_keylist}
+        self.assertEqual(con1, con2)
