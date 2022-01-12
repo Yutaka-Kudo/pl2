@@ -204,30 +204,31 @@ def sign_out(request):
     return HttpResponseRedirect(reverse('display_part:index'))
 
 
-def manage(request):
-    # confirm_permission(request)
+class ManageTemplateView(TemplateView):
+    template_name = "display_part/manage.html"
 
-    dbdict = my_module.create_fieldname_dict(drmodels.Costs)
-    costs = list(drmodels.Costs.objects.all().order_by('id').values())
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
 
-    managers = list(models.Managers.objects.all().order_by('id').values('id', 'name', 'email', 'c_d_permission'))
+        dbdict = my_module.create_fieldname_dict(drmodels.Costs)
+        costs = list(drmodels.Costs.objects.all().order_by('id').values())
 
-    now = dt.datetime.now()
-    month_list = []
-    for i in range(1, 6):
-        to_month = now - relativedelta(months=i)
-        month_list.append(dt.datetime.strftime(to_month, '%Y-%m'))
+        managers = list(models.Managers.objects.all().order_by('id').values('id', 'name', 'email', 'c_d_permission'))
 
-    context = {
-        'dbdict': dbdict,
-        'costs': costs,
-        'managers': managers,
-        'user': request.session.get('user', None),
-        'month_list': month_list,
-    }
-    # ic(context)
+        now = dt.datetime.now()
+        month_list = []
+        for i in range(1, 6):
+            to_month = now - relativedelta(months=i)
+            month_list.append(dt.datetime.strftime(to_month, '%Y-%m'))
 
-    return render(request, 'display_part/manage.html', context)
+        context.update({
+            'dbdict': dbdict,
+            'costs': costs,
+            'managers': managers,
+            'user': self.request.session.get('user', None),
+            'month_list': month_list,
+        })
+        return context
 
 
 def manage_costs(request):
