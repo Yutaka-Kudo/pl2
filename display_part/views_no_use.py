@@ -108,34 +108,36 @@ def pl_ini():
     return context
 
 
-class IndexTemplateView(TemplateView):
-    template_name = "display_part/index.html"
+def index(request):
+    context = initialize_context(request)
 
-    def get_context_data(self, **kwargs):
-        context = super().get_context_data(**kwargs)
-        context.update(initialize_context(self.request))
+    store_dict = {"FES": "fes", "Garage": "garage", "灯篭": "tourou", "罠一目": "wanaichi", "罠中目黒": "wananakame"}
 
-        context.update({
-            "pred_date_list": pred_date_list,
-            "pred_date_list_reversed": pred_date_list_reversed,
-            "previous_date_list": previous_date_list,
-            "store_dict": {
-                "FES": "fes",
-                "Garage": "garage",
-                "灯篭": "tourou",
-                "罠一目": "wanaichi",
-                "罠中目黒": "wananakame"
-            },
-        })
-        context.update(pl_ini())
+    context.update({
+        "pred_date_list": pred_date_list,
+        "pred_date_list_reversed": pred_date_list_reversed,
+        "previous_date_list": previous_date_list,
+        "store_dict": store_dict,
+    })
 
-        if settings.DEBUG:
-            self.request.session['debug'] = 'true'
-        else:
-            self.request.session['debug'] = 'false'
+    # if context['user'].get('email'):
+    # _, store_name = graph_helper.match_stores_by_email(context['user']['email'])
+    # context['store_name'] = store_name
 
-        ic(context['user'])
-        return context
+    # confirm_permission(request)
+    # context['user']['super'] = request.session['user'].get('super')
+    # context['user']['manager'] = request.session['user'].get('manager')
+
+    # if request.session['user'].get('manager'):
+    context.update(pl_ini())
+
+    if settings.DEBUG:
+        request.session['debug'] = 'true'
+    else:
+        request.session['debug'] = 'false'
+
+    ic(context['user'])
+    return render(request, "display_part/index.html", context)
 
 
 def confirm_permission(request):
